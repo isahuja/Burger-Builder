@@ -10,7 +10,6 @@ const Burger = (props) => {
       });
     })
     .reduce((arr, el) => {
-      debugger;
       return arr.concat(el);
     });
   transformedIngredients = transformedIngredients.length ? (
