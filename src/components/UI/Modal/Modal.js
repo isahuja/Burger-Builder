@@ -1,8 +1,35 @@
-import React from "react";
+import React, { Component } from "react";
 import classes from "./Modal.css";
+import Aux from "../../../hoc/Aux/Aux";
+import Backdrop from "../Backdrop/Backdrop";
 
-const Modal = (props) => {
-  return <div className={classes.Modal}>{props.children}</div>;
-};
+class Modal extends Component {
+  shouldComponentUpdate = (nextState, nextProps) => {
+    return nextState.show !== this.props.show;
+  };
+
+  componentDidUpdate = () => {
+    console.log("updated");
+  };
+  render() {
+    return (
+      <Aux>
+        <Backdrop
+          show={this.props.show}
+          clicked={this.props.modalClosed}
+        ></Backdrop>
+        <div
+          style={{
+            opacity: this.props.show ? "1" : "0",
+            transform: this.props.show ? "translateY(0)" : "translateY(-100vh)",
+          }}
+          className={classes.Modal}
+        >
+          {this.props.children}
+        </div>
+      </Aux>
+    );
+  }
+}
 
 export default Modal;

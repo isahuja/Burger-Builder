@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
-import Aux from "../../hoc/Aux";
+import Aux from "../../hoc/Aux/Aux";
+import Modal from "../../components/UI/Modal/Modal";
+import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
+import axios from "../../axios-order";
 
 const INGREDIENT_PRICE = {
   salad: 0.5,
@@ -24,6 +27,7 @@ class BurgerBuilder extends Component {
     },
     totalPrice: 4,
     purchaseable: false,
+    purchasing: false,
   };
 
   addIngredientHandler = (type) => {
@@ -63,11 +67,25 @@ class BurgerBuilder extends Component {
         return ingredient[igkey];
       })
       .reduce((sum, el) => {
-        debugger;
         return sum + el;
       }, 0);
 
     this.setState({ purchaseable: sum > 0 });
+  };
+
+  purchaseHandler = () => {
+    this.setState({ purchasing: true });
+  };
+  purchaseCancelHandler = () => {
+    this.setState({ purchasing: false });
+  };
+  purchaseContinueHandler = () => {
+    // alert("You continue");
+    const order = {
+      ingredients: this.state.ingredient,
+      price: this.state.totalPrice,
+    };
+    axios.post("/orders.json");
   };
 
   render() {
@@ -79,6 +97,18 @@ class BurgerBuilder extends Component {
     }
     return (
       <Aux>
+        <Modal
+          show={this.state.purchasing}
+          modalClosed={this.purchaseCancelHandler}
+        >
+          <OrderSummary
+            ingredients={this.state.ingredient}
+            price={this.state.totalPrice.toFixed(2)}
+            purchasedCancelled={this.purchaseCancelHandler}
+            purchasedContinued={this.purchaseContinueHandler}
+          />
+        </Modal>
+
         <div>
           <Burger ingredient={this.state.ingredient} />
         </div>
@@ -89,6 +119,7 @@ class BurgerBuilder extends Component {
             disabled={disabledInfo}
             price={this.state.totalPrice}
             purchaseable={this.state.purchaseable}
+            ordered={this.purchaseHandler}
           ></BuildControls>
         </div>
       </Aux>
